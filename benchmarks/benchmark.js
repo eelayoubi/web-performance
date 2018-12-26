@@ -1,6 +1,7 @@
-const { performance } = require('perf_hooks');
+const { performance, PerformanceObserver } = require('perf_hooks');
 
 // SETUP 🏁
+
 
 let iterations = 1e7;
 
@@ -19,11 +20,17 @@ while (iterations--) {
   add(a, b);
 }
 
+
 // 🔚 EXERCISE
 
 performance.mark('end');
 
-performance.measure('My Special Benchmark', 'start', 'end');
+const obs = new PerformanceObserver((list, observer) => {
+  console.log(list.getEntries()[0]);
+  performance.clearMarks();
+  observer.disconnect();
+});
 
-const [ measure ] = performance.getEntriesByName('My Special Benchmark');
-console.log(measure);
+obs.observe({ entryTypes: ['measure'] });
+
+performance.measure('My Special Benchmark', 'start', 'end');
